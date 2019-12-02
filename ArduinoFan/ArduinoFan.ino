@@ -39,11 +39,6 @@ void setup()
 
 void loop()
 {
-
-  //stick
-  Serial.print("X: ");
-  Serial.print(analogRead(11));
-  Serial.print("\n");
   
   humid = dht.readHumidity();
   temp = dht.readTemperature(true);
@@ -59,19 +54,20 @@ void loop()
   lcd.print(temp);
   lcd.print("F");
   lcd.setCursor(11, 0);
-  lcd.print("Humid: ");
+  lcd.print("H:");
   lcd.print(humid);
   lcd.print("%");
   
   lcd.setCursor(1, 1);
-  lcd.print("Tigger Temp: ");
+  lcd.print("MTemp: ");
   lcd.print(triggerTemp);
   lcd.print("F");
 
-  lcd.autoscroll();
+//  lcd.autoscroll();
   if(temp > triggerTemp) { 
     servo.write(90);
-  }else{
+  }
+  else{
     servo.write(0);
   }
 }

@@ -5,6 +5,9 @@ import time
 import boto3
 from decimal import Decimal
 
+import matplotlib.pyplot as plt
+import numpy as np
+from collections import Counter 
 class arduinoFan:
     def __init__(self):
         self.TableName = 'EnvironmentData'
@@ -15,8 +18,8 @@ class arduinoFan:
         self.table = self.dynamoDB.Table('EnvironmentData')
         self.sensor_id = 0 
         self.client = boto3.client('dynamodb', region_name='us-east-2')
+    
     # Configure Boto3 to connect to services 
-
     def postAWS(self):
         # print(self.client.list_tables())
         self.sensor_id += 1 
@@ -28,7 +31,26 @@ class arduinoFan:
                 "RAM Usage": Decimal(str(self.ram))
             }
         )
+    
+    def plotAWS(self, temps):
+        freq = Counter(temps)
+        plt.bar(range(len(freq)), list(freq.values()), align='center')
+        plt.xticks(range(len(freq)), list(freq.keys()))
 
+        plt.show()
+
+    def getAWS(self):
+        res = self.table.scan()
+        items = res["Items"]
+        temps = []
+
+        for item in items: 
+            val = item["Temperature"]
+            temps += [int(val)]
+            print(val)
+        print(temps)
+        self.plotAWS(temps)
+        
     # Get System stats 
     def readStats(self):
         ard = serial.Serial('/dev/cu.usbmodem14201', 9600)
@@ -51,4 +73,4 @@ class arduinoFan:
         # print (msg)
 
 obj = arduinoFan()
-obj.readStats()
+obj.getAWS()
